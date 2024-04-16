@@ -6,17 +6,23 @@ int main()
     string message;
     string key;
 
+    //* Getting the message and key from the user
+
     cout << "Enter the message to encrypt: ";
     getline(cin, message);
 
     cout << "Enter the key: ";
     getline(cin, key);
 
+    //* Removing the space from the key and message and transfroming them to capital letter
+
     key.erase(remove(key.begin(), key.end(), ' '), key.end());
     message.erase(remove(message.begin(), message.end(), ' '), message.end());
 
     transform(key.begin(), key.end(), key.begin(), ::toupper);
     transform(message.begin(), message.end(), message.begin(), ::toupper);
+
+    //* Making 2D vector to store the message
 
     int keyLen = key.length();
     int msgLen = message.length();
@@ -33,6 +39,8 @@ int main()
                 block[i][j] = message[k++];
         }
     }
+
+    //* Finding the order in the Key
 
     int order[keyLen];
     for (int i = 0; i < keyLen; i++)
@@ -60,6 +68,8 @@ int main()
         }
     }
 
+    //* Printing the 2D Vector
+
     cout << "\nBlock: " << endl;
 
     for (auto i : block)
@@ -70,6 +80,8 @@ int main()
         }
         cout << endl;
     }
+
+    //* Iterating through the 2D vector using the Key order to get the Ciphertext
 
     cout << "\nEncrypted message: ";
     for (int i = 0; i < keyLen; i++)
