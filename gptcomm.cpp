@@ -70,32 +70,11 @@ int main()
     }
 
     //* Finding the order in the Key
-
-    int order[keyLen];
+    vector<pair<char, int>> order;
     for (int i = 0; i < keyLen; i++)
-        order[i] = key[i] - 'A';
+        order.push_back({key[i], i});
 
-    int indexOrder[keyLen];
-    for (int i = 0; i < keyLen; i++)
-    {
-        indexOrder[i] = i;
-    }
-
-    for (int i = 0; i < keyLen - 1; i++)
-    {
-        for (int j = i + 1; j < keyLen; j++)
-        {
-            if (order[i] > order[j])
-            {
-                int temp = order[i];
-                order[i] = order[j];
-                order[j] = temp;
-                temp = indexOrder[i];
-                indexOrder[i] = indexOrder[j];
-                indexOrder[j] = temp;
-            }
-        }
-    }
+    sort(order.begin(), order.end());
 
     //* Printing the 2D Vector
 
@@ -117,7 +96,7 @@ int main()
     {
         for (int j = 0; j < rowNumber; j++)
         {
-            cout << block[j][indexOrder[i]] << " ";
+            cout << block[j][order[i].second] << " ";
         }
     }
 
