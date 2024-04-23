@@ -1,9 +1,7 @@
-#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <map>
 #include <unordered_map>
 #include <regex>
 using namespace std;
@@ -11,6 +9,7 @@ using namespace std;
 bool validKey(string str)
 {
     regex validPattern("[a-zA-Z]+");
+
     if (regex_match(str, validPattern))
     {
         unordered_map<char, int> mp;
@@ -22,6 +21,7 @@ bool validKey(string str)
         }
         return true;
     }
+
     return false;
 }
 
@@ -30,7 +30,9 @@ int main()
     string message;
     string key;
     regex validMessage("[a-zA-Z]+");
+
     //* Getting the message and key from the user
+
     while (message.empty() || !regex_match(message, validMessage))
     {
         std::cout << "Enter the message to encrypt: ";
@@ -71,31 +73,11 @@ int main()
 
     //* Finding the order in the Key
 
-    int order[keyLen];
+    vector<pair<char, int>> order;
     for (int i = 0; i < keyLen; i++)
-        order[i] = key[i] - 'A';
+        order.push_back({key[i], i});
 
-    int indexOrder[keyLen];
-    for (int i = 0; i < keyLen; i++)
-    {
-        indexOrder[i] = i;
-    }
-
-    for (int i = 0; i < keyLen - 1; i++)
-    {
-        for (int j = i + 1; j < keyLen; j++)
-        {
-            if (order[i] > order[j])
-            {
-                int temp = order[i];
-                order[i] = order[j];
-                order[j] = temp;
-                temp = indexOrder[i];
-                indexOrder[i] = indexOrder[j];
-                indexOrder[j] = temp;
-            }
-        }
-    }
+    sort(order.begin(), order.end());
 
     //* Printing the 2D Vector
 
@@ -117,7 +99,7 @@ int main()
     {
         for (int j = 0; j < rowNumber; j++)
         {
-            cout << block[j][indexOrder[i]] << " ";
+            cout << block[j][order[i].second] << " ";
         }
     }
 
