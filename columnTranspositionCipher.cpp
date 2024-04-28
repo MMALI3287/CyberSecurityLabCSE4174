@@ -29,7 +29,7 @@ int main()
 {
     string message;
     string key;
-    regex validMessage("[a-zA-Z]+");
+    regex validMessage("[a-zA-Z ]+");
 
     //* Getting the message and key from the user
 
