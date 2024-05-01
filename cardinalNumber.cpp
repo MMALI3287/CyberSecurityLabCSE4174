@@ -1,6 +1,13 @@
 #include <iostream>
 #include <cmath>
 
+bool isCardinal(double num)
+{
+    double intPart;
+    double fracPart = modf(num, &intPart);
+    return fracPart == 0 && num >= 0;
+}
+
 int main()
 {
     double num;

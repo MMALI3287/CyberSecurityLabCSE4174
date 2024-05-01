@@ -5,13 +5,15 @@
 #include <string>
 #include <time.h>
 #include <vector>
+#include <string.h>
+#include <algorithm>
 using namespace std;
-bool isPrime(long long n)
+bool isPrime(unsigned long long n)
 {
-    long long j = sqrt(n);
+    unsigned long long j = sqrt(n);
     if (n >= 2)
     {
-        for (long long i = 2; i <= j; i++)
+        for (unsigned long long i = 2; i <= j; i++)
         {
             if (n % i == 0)
                 return false;
@@ -21,17 +23,33 @@ bool isPrime(long long n)
     return false;
 }
 
-bool isCardinal(double num)
+unsigned long long modPow(unsigned long long base, unsigned long long exponent, unsigned long long modulus)
 {
-    double intPart;
-    double fracPart = modf(num, &intPart);
+    if (modulus == 1)
+        return 0;
+    unsigned long long result = 1;
+    base = base % modulus;
+    while (exponent > 0)
+    {
+        if (exponent % 2 == 1)
+            result = (result * base) % modulus;
+        exponent = exponent >> 1;
+        base = (base * base) % modulus;
+    }
+    return result;
+}
+
+bool isCardinal(long double num)
+{
+    long double intPart;
+    long double fracPart = modf(num, &intPart);
     return fracPart == 0 && num >= 0;
 }
 
-vector<string> RSAencrypt(string message, long long e, long long n)
+vector<string> RSAencrypt(string message, unsigned long long e, unsigned long long n)
 {
-    long long siz = 127;
-    long long asiz = 1;
+    unsigned long long siz = 127;
+    unsigned long long asiz = 0;
 
     while (siz < n)
     {
@@ -39,54 +57,68 @@ vector<string> RSAencrypt(string message, long long e, long long n)
         asiz++;
     }
 
-    vector<string> mess(asiz);
-    for (long long i = 0; i < asiz; i++)
+    unsigned long long vsize = (strlen(message.c_str()) + asiz - 1) / asiz;
+    vector<string> encryptedMessage;
+
+    vector<string> mess;
+    vector<unsigned long long> asciiMess;
+
+    cout << "Message: " << message << endl
+         << endl;
+    for (unsigned long long i = 0; i < vsize; i++)
     {
-        mess.push_back(message.substr(i * asiz, asiz));
+        string part = message.substr(i * asiz, asiz);
+        part.resize(asiz, ' ');
+        mess.push_back(part);
     }
-    for (long long i = 0; i < asiz; i++)
+
+    for (auto i : mess)
     {
-        cout << i << "->" << mess[i] << endl;
-    }
-    vector<string> encryptedMessage(asiz);
-    for (long long i = 0; i < asiz; i++)
-    {
-        encryptedMessage[i] = "";
-        for (long long j = 0; j < mess[i].length(); j++)
+        string temp = i;
+        unsigned long long tempNum = 0;
+        for (char &c : temp)
         {
-            encryptedMessage[i] += to_string((long long)pow((long long)mess[i][j], e) % n);
+            tempNum = (tempNum * 1000) + (unsigned long long)c;
         }
+        asciiMess.push_back(tempNum);
+
+        cout << temp << "->" << tempNum << endl;
+    }
+
+    for (auto i : asciiMess)
+    {
+        encryptedMessage.push_back(to_string(modPow(i, e, n)));
     }
     return encryptedMessage;
 }
 
-string RSAdecrypt(string encryptedMessage, long long d, long long n)
+vector<string> RSAdecrypt(vector<string> encryptedMessage, unsigned long long d, unsigned long long n)
 {
-    string message = "";
-    for (long long i = 0; i < encryptedMessage.length(); i++)
+    vector<string> decryptedMessage;
+    for (auto i : encryptedMessage)
     {
-        message += to_string((long long)pow((long long)encryptedMessage[i], d) % n);
+        decryptedMessage.push_back(to_string(modPow(stoll(i), d, n)));
     }
-    return message;
+    return decryptedMessage;
 }
 
 int main()
 {
-    long long p;
-    long long q;
-    long long n;
-    long long phi;
-    long long e;
-    long long d;
-    long long k = 1;
+    unsigned long long p;
+    unsigned long long q;
+    unsigned long long n;
+    unsigned long long phi;
+    unsigned long long e;
+    long double d;
+    unsigned long long k = 1;
     srand(time(NULL));
     while (!isPrime(p))
     {
-        p = 999999 + (rand() % 999999999);
+        p = 66 + (rand() % 999);
     }
     while (!isPrime(q))
     {
-        q = 999999 + (rand() % 999999999);
+        q = 66 + (rand() % 999);
     }
     n = p * q;
     phi = (p - 1) * (q - 1);
@@ -95,13 +127,14 @@ int main()
     {
         e++;
     }
-    d = -1;
+    d = -1.1;
     while (!isCardinal(d))
     {
-        d = (1 + phi * k) / e;
+        d = (1 + double(phi) * double(k)) / double(e);
         k++;
-        cout << d << endl;
     }
+
+    cout << "Prime numbers: (" << p << ", " << q << ")" << endl;
     cout << "Public key: (" << e << ", " << n << ")" << endl;
     cout << "Private key: (" << d << ", " << n << ")" << endl;
 
@@ -109,12 +142,19 @@ int main()
     cout << "Enter the message: ";
     getline(cin, message);
 
-    cout << "The message is " << message << endl;
+    message.erase(remove(message.begin(), message.end(), '\0'), message.end());
     vector<string> encrypted = RSAencrypt(message, e, n);
-    for (long long i = 0; i < encrypted.size(); i++)
+    for (auto i : encrypted)
     {
-        cout << "The encrypted message is " << encrypted[i] << endl;
+        cout << i;
     }
-    // cout << "The decrypted message is " << RSAdecrypt(RSAencrypt(message, e, n), d, n) << endl;
+    cout << endl;
+
+    vector<string> decrypted = RSAdecrypt(encrypted, d, n);
+
+    for (auto i : decrypted)
+    {
+        cout << char(stoi(i));
+    }
     return 0;
 }
