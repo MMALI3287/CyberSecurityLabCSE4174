@@ -1,5 +1,3 @@
-// find a large prime number
-
 #include <math.h>
 #include <iostream>
 #include <string>
