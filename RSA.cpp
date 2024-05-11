@@ -126,11 +126,11 @@ int main()
 
     while (!isPrime(p))
     {
-        p = 6666 + (rand() % 99999);
+        p = 5555 + (rand() % 100000);
     }
     while (!isPrime(q))
     {
-        q = 6666 + (rand() % 99999);
+        q = 5555 + (rand() % 100000);
     }
 
     cout << "Prime numbers: (" << p << ", " << q << ")" << endl
